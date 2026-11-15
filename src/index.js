@@ -26,12 +26,12 @@ root.render(
 
         <Route path="/landing" element={<Userlandingpage />}>
           <Route index element={<Usermainpage />} />
-          <Route path="features" element={<Features />} />
-          <Route path="userlist" element={<Userlist />} />
-          <Route path="service" element={<Servicepage />} />
+          <Route path="db" element={<Db />} />
           <Route path="products" element={<Product />} />
-          <Route path="db" element={<Db/>}/>
-          
+          <Route path="books" element={<Product />} />
+          <Route path="userlist" element={<Userlist />} />
+          <Route path="features" element={<Features />} />
+          <Route path="service" element={<Servicepage />} />
           <Route path="*" element={<Errorpage />} />
         </Route>
 

@@ -9,13 +9,13 @@ function Userlandingpage() {
   return (
     <Fragment>
       <Header/>
-      <div className='conatainer-fluid'>
+      <div className='container-fluid'>
         <div className='row'> 
-          <div className='col-md-2'>
+          <div className='col-md-2 p-0'>
             <Sidebar/>
           
           </div>
-          <div className='col-md -10 fix-height'>
+          <div className='col-md-10 fix-height p-4'>
                 <Outlet></Outlet>
           </div>
         </div>
