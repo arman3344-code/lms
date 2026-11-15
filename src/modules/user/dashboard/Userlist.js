@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-
-const API_URL = "http://localhost:8900";
+import API_URL from "../../../config";
 
 export default function Userlist() {
   const [userlist, updateusers] = useState([]);

@@ -4,8 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { toast, ToastContainer } from "react-toastify";
 import libraryBg from "../../../img/library_bg.jpg";
-
-const API_URL = "http://localhost:8900";
+import API_URL from "../../../config";
 
 function Userregistorpage() {
   const nav = useNavigate();

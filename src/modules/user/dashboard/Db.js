@@ -1,8 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-
-const API_URL = "http://localhost:8900";
+import API_URL from "../../../config";
 
 function Db() {
   const [stats, setStats] = useState({
