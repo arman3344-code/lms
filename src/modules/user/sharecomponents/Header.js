@@ -1,9 +1,30 @@
-import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const currentPath = location.pathname;
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("user");
+      if (stored) {
+        setCurrentUser(JSON.parse(stored));
+      } else {
+        setCurrentUser(null);
+      }
+    } catch (e) {
+      setCurrentUser(null);
+    }
+  }, [location.pathname]);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setCurrentUser(null);
+    navigate("/");
+  };
 
   return (
     <header className="container-fluid b-gr py-2 border-bottom border-dark">
@@ -13,12 +34,18 @@ function Header() {
           to="/landing"
           className="d-flex align-items-center text-white text-decoration-none me-lg-4 fs-4 fw-bold"
         >
-          <div className="bg-primary rounded-3 p-2 me-2 d-flex align-items-center justify-content-center" style={{ width: "36px", height: "36px" }}>
+          <div
+            className="bg-primary rounded-3 p-2 me-2 d-flex align-items-center justify-content-center"
+            style={{ width: "36px", height: "36px" }}
+          >
             <i className="fa-solid fa-book-open text-white fs-5"></i>
           </div>
           <div>
             <span>Library Portal</span>
-            <small className="d-block text-white-50 fw-normal" style={{ fontSize: "11px", marginTop: "-4px" }}>
+            <small
+              className="d-block text-white-50 fw-normal"
+              style={{ fontSize: "11px", marginTop: "-4px" }}
+            >
               Library Management System
             </small>
           </div>
@@ -29,7 +56,9 @@ function Header() {
           <li>
             <Link
               to="/landing"
-              className={`nav-link px-3 text-white ${currentPath === "/landing" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-house me-1"></i> Home
             </Link>
@@ -37,7 +66,9 @@ function Header() {
           <li>
             <Link
               to="/landing/db"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/db" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/db" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-chart-line me-1"></i> Dashboard
             </Link>
@@ -45,7 +76,9 @@ function Header() {
           <li>
             <Link
               to="/landing/books"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/books" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/books" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-book me-1"></i> Books (CRUD)
             </Link>
@@ -53,7 +86,9 @@ function Header() {
           <li>
             <Link
               to="/landing/products"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/products" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/products" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-layer-group me-1"></i> Catalog
             </Link>
@@ -61,7 +96,9 @@ function Header() {
           <li>
             <Link
               to="/landing/userlist"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/userlist" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/userlist" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-users me-1"></i> Members
             </Link>
@@ -69,7 +106,9 @@ function Header() {
           <li>
             <Link
               to="/landing/features"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/features" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/features" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-tags me-1"></i> Genres
             </Link>
@@ -77,7 +116,9 @@ function Header() {
           <li>
             <Link
               to="/landing/service"
-              className={`nav-link px-3 text-white ${currentPath === "/landing/service" ? "fw-bold text-info" : ""}`}
+              className={`nav-link px-3 text-white ${
+                currentPath === "/landing/service" ? "fw-bold text-info" : ""
+              }`}
             >
               <i className="fa-solid fa-clock me-1"></i> Rules & Timings
             </Link>
@@ -85,13 +126,36 @@ function Header() {
         </ul>
 
         {/* Auth Actions */}
-        <div className="text-end">
-          <Link to="/" className="btn btn-outline-light btn-sm me-2">
-            <i className="fa-solid fa-right-to-bracket me-1"></i> Portal Login
-          </Link>
-          <Link to="/registor" className="btn btn-warning btn-sm fw-semibold">
-            <i className="fa-solid fa-user-plus me-1"></i> New Member
-          </Link>
+        <div className="text-end d-flex align-items-center gap-2">
+          {currentUser ? (
+            <>
+              <div className="text-white text-start me-2 d-none d-sm-block">
+                <div className="fw-semibold small lh-1">
+                  <i className="fa-solid fa-user-circle text-warning me-1"></i>
+                  {currentUser.name}
+                </div>
+                <small className="text-white-50" style={{ fontSize: "10px" }}>
+                  {currentUser.membershipId || "LIB-USER"} • {currentUser.memberType || "Member"}
+                </small>
+              </div>
+              <button
+                onClick={handleLogout}
+                className="btn btn-outline-danger btn-sm fw-semibold"
+                title="Logout from portal"
+              >
+                <i className="fa-solid fa-right-from-bracket me-1"></i> Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/" className="btn btn-outline-light btn-sm me-1">
+                <i className="fa-solid fa-right-to-bracket me-1"></i> Login
+              </Link>
+              <Link to="/registor" className="btn btn-warning btn-sm fw-semibold">
+                <i className="fa-solid fa-user-plus me-1"></i> Register
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>
@@ -99,5 +163,3 @@ function Header() {
 }
 
 export default Header;
-
-

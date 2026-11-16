@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -7,6 +7,7 @@ import libraryBg from "../../../img/library_bg.jpg";
 import API_URL from "../../../config";
 
 function Userregistorpage() {
+  const [loading, setLoading] = useState(false);
   const nav = useNavigate();
 
   const {
@@ -20,21 +21,22 @@ function Userregistorpage() {
   });
 
   const formSubmit = (formdata) => {
+    setLoading(true);
     axios
       .post(`${API_URL}/registor`, formdata)
       .then((res) => {
-        toast.success(res.data.msg || "Member registered successfully!");
+        toast.success(res.data.msg || "Member registered successfully! Please login.", { theme: "dark" });
         setTimeout(() => {
           nav("/");
         }, 1500);
       })
       .catch((err) => {
-        console.log(err);
-        if (err.response) {
-          toast.error(err.response.data.msg || "Registration failed");
-        } else {
-          toast.error("Server not responding");
-        }
+        console.log("Registration error:", err);
+        const errMsg = err.response?.data?.msg || "Registration failed. Please check inputs or server connection.";
+        toast.error(errMsg, { theme: "dark" });
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -50,73 +52,107 @@ function Userregistorpage() {
 
       <div className="container position-relative" style={{ zIndex: 2 }}>
         <div className="row justify-content-center">
-          <div className="col-md-5 col-sm-10 card shadow-lg border-0 rounded-4 p-4 login-transparent-card">
-            <h3 className="text-center mb-4 fw-bold text-white">Library Member Registration</h3>
+          <div className="col-md-6 col-lg-5 col-sm-10 card shadow-lg border-0 rounded-4 p-4 login-transparent-card">
+            <h3 className="text-center mb-2 fw-bold text-white d-flex align-items-center justify-content-center">
+              <i className="fa-solid fa-user-plus me-2 text-warning"></i> Member Registration
+            </h3>
+            <p className="text-center text-white-50 small mb-3">
+              Create your library account to borrow books and access digital catalogs.
+            </p>
             <ToastContainer />
+
             <form onSubmit={handleSubmit(formSubmit)}>
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Full Name</label>
+              <div className="mb-2">
+                <label className="form-label fw-semibold text-white small">Full Name</label>
                 <input
-                  className="form-control"
+                  className="form-control form-control-sm"
                   placeholder="Enter full name"
-                  {...register("name", { required: true })}
+                  {...register("name", { required: "Full name is required" })}
                 />
-                {errors.name && <small className="text-danger">Name is required</small>}
+                {errors.name && <small className="text-danger">{errors.name.message}</small>}
               </div>
 
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Phone Number</label>
+              <div className="mb-2">
+                <label className="form-label fw-semibold text-white small">Phone Number</label>
                 <input
-                  className="form-control"
+                  type="tel"
+                  className="form-control form-control-sm"
                   placeholder="Enter phone number"
-                  {...register("phone", { required: true })}
+                  {...register("phone", { required: "Phone number is required" })}
                 />
-                {errors.phone && <small className="text-danger">Phone is required</small>}
+                {errors.phone && <small className="text-danger">{errors.phone.message}</small>}
               </div>
 
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Email Address</label>
+              <div className="mb-2">
+                <label className="form-label fw-semibold text-white small">Email Address</label>
                 <input
                   type="email"
-                  className="form-control"
+                  className="form-control form-control-sm"
                   placeholder="Enter email address"
-                  {...register("email", { required: true })}
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^\S+@\S+\.\S+$/,
+                      message: "Invalid email format",
+                    },
+                  })}
                 />
-                {errors.email && <small className="text-danger">Email is required</small>}
+                {errors.email && <small className="text-danger">{errors.email.message}</small>}
               </div>
 
-              <div className="mb-3">
-                <label className="form-label fw-semibold">Member Role</label>
-                <select className="form-select" {...register("memberType")}>
-                  <option value="Student">Student</option>
-                  <option value="Faculty">Faculty Member</option>
-                  <option value="Scholar">Research Scholar</option>
-                  <option value="General Member">General Reader</option>
+              <div className="mb-2">
+                <label className="form-label fw-semibold text-white small">Member Role</label>
+                <select className="form-select form-select-sm" {...register("memberType")}>
+                  <option value="Student">Student (Quotas: 3 books / 14 days)</option>
+                  <option value="Faculty">Faculty Member (Quotas: 10 books / 90 days)</option>
+                  <option value="Scholar">Research Scholar (Quotas: 6 books / 30 days)</option>
+                  <option value="General Member">General Reader (Quotas: 2 books / 7 days)</option>
                 </select>
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-semibold">Password</label>
+                <div className="d-flex justify-content-between align-items-center">
+                  <label className="form-label fw-semibold text-white small">Password</label>
+                  <span className="badge bg-secondary" style={{ fontSize: "10px" }}>Max 8 characters</span>
+                </div>
                 <input
                   type="password"
-                  className="form-control"
-                  placeholder="Create password"
-                  {...register("password", { required: true })}
+                  maxLength={8}
+                  className="form-control form-control-sm"
+                  placeholder="Create password (max 8 characters)"
+                  {...register("password", {
+                    required: "Password is required",
+                    maxLength: {
+                      value: 8,
+                      message: "Password cannot exceed 8 characters",
+                    },
+                  })}
                 />
-                {errors.password && <small className="text-danger">Password is required</small>}
+                {errors.password && <small className="text-danger">{errors.password.message}</small>}
               </div>
 
-              <div className="d-flex justify-content-between align-items-center mt-4">
-                <input
+              <div className="d-flex justify-content-between align-items-center mt-3">
+                <button
                   type="submit"
-                  value="Register Member"
-                  className="btn btn-primary px-4 fw-semibold w-100"
-                />
+                  disabled={loading}
+                  className="btn btn-warning px-4 fw-semibold w-100 py-2 shadow-sm text-dark"
+                >
+                  {loading ? (
+                    <span>
+                      <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                      Registering...
+                    </span>
+                  ) : (
+                    <span>
+                      <i className="fa-solid fa-id-card me-2"></i> Register Library Account
+                    </span>
+                  )}
+                </button>
               </div>
 
-              <div className="text-center mt-3 pt-3 border-top">
-                <Link to="/" className="text-decoration-none small text-muted">
-                  Already have an account? <span className="text-primary fw-semibold">Login here</span>
+              <div className="text-center mt-3 pt-2 border-top border-secondary border-opacity-50">
+                <Link to="/" className="text-decoration-none small text-white-50">
+                  Already registered? <span className="text-warning fw-semibold">Login here</span>
                 </Link>
               </div>
             </form>
@@ -127,4 +163,4 @@ function Userregistorpage() {
   );
 }
 
-export default Userregistorpage;
+export default Userregistorpage;

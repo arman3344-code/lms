@@ -218,6 +218,17 @@ export default function Userlist() {
                     <option value="General Member">General Reader</option>
                   </select>
                 </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-semibold">Password (Max 8 Chars)</label>
+                  <input
+                    type="password"
+                    maxLength={8}
+                    className="form-control"
+                    placeholder="Enter password (max 8 chars)"
+                    value={newUser.password}
+                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                  />
+                </div>
               </div>
               <div className="mt-3">
                 <button type="submit" className="btn btn-success me-2 fw-semibold">
@@ -290,6 +301,17 @@ export default function Userlist() {
                     <option value="Scholar">Research Scholar</option>
                     <option value="General Member">General Reader</option>
                   </select>
+                </div>
+                <div className="col-md-3">
+                  <label className="form-label fw-semibold">Password (Max 8 Chars)</label>
+                  <input
+                    type="password"
+                    maxLength={8}
+                    className="form-control"
+                    placeholder="Enter password (max 8 chars)"
+                    value={editUser.password}
+                    onChange={(e) => setEditUser({ ...editUser, password: e.target.value })}
+                  />
                 </div>
               </div>
               <div className="mt-3">
